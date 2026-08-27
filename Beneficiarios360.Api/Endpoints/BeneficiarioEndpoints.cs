@@ -1,4 +1,4 @@
-﻿using Beneficiarios360.Api.DTOs;
+using Beneficiarios360.Api.DTOs;
 using Beneficiarios360.Api.Services;
 
 namespace Beneficiarios360.Api.Endpoints;
@@ -18,6 +18,8 @@ public static class BeneficiarioEndpoints
         group.MapPost("/", CreateAsync);
 
         group.MapPut("/{id:int}", UpdateAsync);
+
+        group.MapDelete("/{id:int}", DeactivateAsync);
 
         return app;
     }
@@ -95,5 +97,18 @@ public static class BeneficiarioEndpoints
         return updated
             ? Results.NoContent()
             : Results.NotFound();
+    }
+
+    private static async Task<IResult> DeactivateAsync(int id, IBeneficiarioService service, CancellationToken ct)
+    {
+        DeactivateBeneficiarioResult result = await service.DeactivateAsync(id, ct);
+
+        return result switch
+        {
+            DeactivateBeneficiarioResult.Success => Results.NoContent(),
+            DeactivateBeneficiarioResult.NotFound => Results.NotFound(),
+            DeactivateBeneficiarioResult.AlreadyInactive => Results.BadRequest(new { message = "El beneficiario ya se encuentra inactivo." }),
+            _ => Results.StatusCode(500)
+        };
     }
 }

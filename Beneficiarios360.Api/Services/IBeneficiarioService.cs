@@ -1,4 +1,4 @@
-﻿using Beneficiarios360.Api.DTOs;
+using Beneficiarios360.Api.DTOs;
 
 namespace Beneficiarios360.Api.Services
 {
@@ -13,6 +13,8 @@ namespace Beneficiarios360.Api.Services
         Task<CreateBeneficiarioResult> CreateAsync(CrearBeneficiarioRequest request,CancellationToken ct);
 
         Task<bool> UpdateAsync( int id,ActualizarBeneficiarioRequest request,CancellationToken ct);
+
+        Task<DeactivateBeneficiarioResult> DeactivateAsync(int id, CancellationToken ct);
     }
 
     public sealed record CreateBeneficiarioResult(

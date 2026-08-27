@@ -1,4 +1,4 @@
-﻿using Beneficiarios360.Api.Data;
+using Beneficiarios360.Api.Data;
 using Beneficiarios360.Api.DTOs;
 using Beneficiarios360.Api.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -132,6 +132,30 @@ public sealed class BeneficiarioService(AppDbContext db,ILogger<BeneficiarioServ
             entity.Id);
 
         return true;
+    }
+
+    public async Task<DeactivateBeneficiarioResult> DeactivateAsync(int id, CancellationToken ct)
+    {
+        Beneficiario? entity =
+            await db.Beneficiarios.FindAsync(
+                new object[] { id },
+                ct);
+
+        if (entity is null)
+            return DeactivateBeneficiarioResult.NotFound;
+
+        if (!entity.Activo)
+            return DeactivateBeneficiarioResult.AlreadyInactive;
+
+        entity.Activo = false;
+        
+        await db.SaveChangesAsync(ct);
+
+        logger.LogInformation(
+            "Beneficiario {BeneficiarioId} desactivado",
+            entity.Id);
+
+        return DeactivateBeneficiarioResult.Success;
     }
 
     private static BeneficiarioDto ToDto(Beneficiario entity)
