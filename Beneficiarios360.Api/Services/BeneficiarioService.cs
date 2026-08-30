@@ -65,11 +65,7 @@ public sealed class BeneficiarioService(AppDbContext db,ILogger<BeneficiarioServ
             string.IsNullOrWhiteSpace(nombres) ||
             string.IsNullOrWhiteSpace(apellidos))
         {
-            return new(
-                false,
-                false,
-                null,
-                "Documento, nombres y apellidos son obligatorios.");
+            return new(false, false, null, "Documento, nombres y apellidos son obligatorios.");
         }
 
         bool duplicate =
@@ -79,11 +75,7 @@ public sealed class BeneficiarioService(AppDbContext db,ILogger<BeneficiarioServ
 
         if (duplicate)
         {
-            return new(
-                false,
-                true,
-                null,
-                "El documento ya está registrado.");
+            return new(false, true, null,"El documento ya está registrado.");
         }
 
         var entity = new Beneficiario
@@ -108,31 +100,25 @@ public sealed class BeneficiarioService(AppDbContext db,ILogger<BeneficiarioServ
 
     public async Task<bool> UpdateAsync(int id, ActualizarBeneficiarioRequest request, CancellationToken ct)
     {
-        Beneficiario? entity =
-            await db.Beneficiarios.FindAsync(
-                new object[] { id },
-                ct);
+        Beneficiario? entity =await db.Beneficiarios.FindAsync([id],ct);
 
         if (entity is null)
             return false;
 
-        entity.Nombres =
-            request.Nombres.Trim();
+        entity.Nombres = request.Nombres.Trim();
 
-        entity.Apellidos =
-            request.Apellidos.Trim();
+        entity.Apellidos = request.Apellidos.Trim();
 
-        entity.Activo =
-            request.Activo;
+        entity.Activo = request.Activo;
 
         await db.SaveChangesAsync(ct);
 
-        logger.LogInformation(
-            "Beneficiario {BeneficiarioId} actualizado",
-            entity.Id);
+        logger.LogInformation("Beneficiario {BeneficiarioId} actualizado", entity.Id);
 
         return true;
     }
+
+    //TO-DO: Agregar metodo de servicio para DELETE
 
     private static BeneficiarioDto ToDto(Beneficiario entity)
     {
