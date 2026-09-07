@@ -5,13 +5,9 @@ namespace Beneficiarios360.Api.Services
     public interface IBeneficiarioService
     {
         Task<IReadOnlyList<BeneficiarioDto>>GetAllAsync(string? search, bool? activo, CancellationToken ct);
-
         Task<BeneficiarioDto?> GetByIdAsync( int id,CancellationToken ct);
-
         Task<BeneficiarioDto?> GetByDocumentoAsync(string documento, CancellationToken ct);
-
         Task<CreateBeneficiarioResult> CreateAsync(CrearBeneficiarioRequest request,CancellationToken ct);
-
         Task<bool> UpdateAsync( int id,ActualizarBeneficiarioRequest request,CancellationToken ct);
     }
 

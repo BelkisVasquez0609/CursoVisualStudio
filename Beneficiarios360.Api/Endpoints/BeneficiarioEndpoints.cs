@@ -8,7 +8,8 @@ public static class BeneficiarioEndpoints
 {
     public static IEndpointRouteBuilder MapBeneficiarios(this IEndpointRouteBuilder app)
     {
-        RouteGroupBuilder group =app.MapGroup( "/api/beneficiarios") .WithTags("Beneficiarios");
+        //Todos los endpoints del grupo requieren token (si usamos RequireAuthorization=
+        RouteGroupBuilder group = app.MapGroup("/api/beneficiarios").WithTags("Beneficiarios").RequireAuthorization();
 
         group.MapGet("/", GetAllAsync)
                            .WithName("GetBeneficiarios")
@@ -32,14 +33,16 @@ public static class BeneficiarioEndpoints
 
         group.MapPut("/{id:int}", UpdateAsync)
                                 .AddEndpointFilter<ValidationFilter<ActualizarBeneficiarioRequest>>()
+                                //.RequireAuthorization("AdminOnly")
                                 .WithName("UpdateBeneficiario")
                                 .WithSummary("Actualiza un beneficiario")
                                 .Produces(StatusCodes.Status204NoContent)
                                 .ProducesValidationProblem(StatusCodes.Status400BadRequest)
-                                .Produces(StatusCodes.Status404NotFound);
+                                .Produces(StatusCodes.Status404NotFound)
+                                .RequireAuthorization("AdminOnly"); // se necesita rol de administrador;
 
                                     return app;
-                                }
+    }
 
        //TO-DO: Agregar endpoint DELETE (Inactivar) junto con su nombre y Summary
 
@@ -102,8 +105,7 @@ public static class BeneficiarioEndpoints
 
     private static async Task<IResult> UpdateAsync( int id, ActualizarBeneficiarioRequest request, IBeneficiarioService service, CancellationToken ct)
     {
-        bool updated =
-            await service.UpdateAsync(id,request, ct);
+        bool updated = await service.UpdateAsync(id,request, ct);
 
         return updated ? Results.NoContent() : Results.NotFound();
     }
